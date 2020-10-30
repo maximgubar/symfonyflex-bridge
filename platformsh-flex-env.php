@@ -39,6 +39,7 @@ function mapPlatformShEnvironment() : void
     mapPlatformShMongoDatabase('mongodatabase', $config);
     mapPlatformShElasticSearch('elasticsearch', $config);
     mapPlatformShRabbitMq('rabbitmq', $config);
+    mapPlatformShRedis('rediscache', $config);
 
     // Set the Swiftmailer configuration if it's not set already.
     if (!getenv('MAILER_URL')) {
@@ -235,6 +236,22 @@ function mapPlatformShRabbitMq(string $relationshipName, Config $config): void
         $credentials['scheme'],
         $credentials['username'],
         $credentials['password'],
+        $credentials['host'],
+        $credentials['port']
+    ));
+}
+
+function mapPlatformShRedis(string $relationshipName, Config $config): void
+{
+    if (!$config->hasRelationship($relationshipName)) {
+        return;
+    }
+
+    $credentials = $config->credentials($relationshipName);
+
+    setEnvVar('REDIS_URL', sprintf(
+        '%s://%s:%s',
+        $credentials['scheme'],
         $credentials['host'],
         $credentials['port']
     ));
